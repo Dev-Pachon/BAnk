@@ -1,5 +1,5 @@
 package dataStructures;
 
-public interface IPriorityQueue {
+public interface IPriorityQueue<T> extends IQueue<T> {
 
 }

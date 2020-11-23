@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class User {
+public class User implements Comparable<User>{
 	private String name;
 	private String iD;
 	private String bankAccountNum;
@@ -55,6 +55,11 @@ public class User {
 
 	public LocalDate getDateOfJoin() {
 		return dateOfJoin;
+	}
+
+	@Override
+	public int compareTo(User o) {
+		return this.dateOfJoin.compareTo(o.dateOfJoin);
 	}
 	
 	
