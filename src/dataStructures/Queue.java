@@ -50,6 +50,21 @@ public class Queue<T> implements IQueue<T> {
 	public boolean isEmpty() {
 		return first==null;
 	}
+	
+	public T[] toArray() {
+		
+		if(first==null) {
+			return null;
+		}
+		@SuppressWarnings("unchecked")
+		T[] temp = (T[])new Object[size];
+		NodeQueue<T> nodeTemp = first;
+		for(int i = 0; i<size;i++) {
+			temp[i] = nodeTemp.getValue();
+			nodeTemp = nodeTemp.getNext();
+		}
+		return temp;
+	}
 
 }
 

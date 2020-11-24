@@ -2,7 +2,8 @@ package dataStructures;
 
 public class Stack<T> implements IStack<T> {
 	
-	NodeStack<T> first;
+	private NodeStack<T> first;
+	private int size;
 	
 	@Override
 	public void push(T t) {
@@ -13,30 +14,33 @@ public class Stack<T> implements IStack<T> {
 			temp.setNext(first);
 			first = temp;
 		}
+		size++;
 	}
 
 	@Override
 	public T pop() {
-		// TODO Auto-generated method stub
-		return null;
+		NodeStack<T> temp = first;
+		if(temp!=null) {
+			first = first.getNext();
+			size--;
+		}
+		
+		return temp.getValue();
 	}
 	
 	@Override
 	public T peek() {
-		// TODO Auto-generated method stub
-		return null;
+		return first.getValue();
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return size==0;
 	}
 
 }
