@@ -3,7 +3,7 @@ package dataStructures;
 public class PriorityQueue<T extends Comparable<T>> extends Heap<T> implements IPriorityQueue<T> {
 	
 	public PriorityQueue(Class<T> c,int size) {
-		super(size);
+		super(size,c);
 	}
 	
 	@Override

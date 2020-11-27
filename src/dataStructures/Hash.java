@@ -1,5 +1,7 @@
 package dataStructures;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Hash<T, K extends Comparable<K>> implements IHash<T, K> {
@@ -9,18 +11,21 @@ public class Hash<T, K extends Comparable<K>> implements IHash<T, K> {
 	
 	@SuppressWarnings("unchecked")
 	public Hash(int size) {
-		hashM = (LinkedList<NodeHash<T,K>>[]) new Object[size];
+		final LinkedList<NodeHash<T,K>>[] hashM = (LinkedList<NodeHash<T,K>>[]) Array.newInstance(LinkedList.class, size);
+		this.hashM = hashM;
 		size = 0;
 	}
 	
 	@Override
 	public void insert(T t, K k) {
-		int h = hash(k);
-		if(hashM[h]==null) {
-			hashM[h] = new LinkedList<>();
+		if(size+1<=hashM.length) {
+			int h = hash(k);
+			if(hashM[h]==null) {
+				hashM[h] = new LinkedList<>();
+			}
+			hashM[h].add(new NodeHash<T,K>(t, k));
+			size ++;
 		}
-		hashM[h].add(new NodeHash<T,K>(t, k));
-		size ++;
 	}
 
 	@Override
@@ -38,8 +43,12 @@ public class Hash<T, K extends Comparable<K>> implements IHash<T, K> {
 	}
 
 	@Override
-	public void delete(T t) {
-		size--;
+	public void delete(T t,K k) {
+		int h = hash(k);
+		if(hashM[h]!=null) {
+			size = (hashM[h].remove(t))? size-1:size;
+		}
+		
 	}
 
 	@Override
@@ -47,9 +56,8 @@ public class Hash<T, K extends Comparable<K>> implements IHash<T, K> {
 		return size;
 	}
 	
-	//Fix it!!!!
 	private int hash(K k) {
-		return k.hashCode();
+		return Math.abs(k.hashCode()%hashM.length);
 	}
 
 }

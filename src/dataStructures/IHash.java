@@ -6,7 +6,7 @@ public interface IHash<T,K extends Comparable<K>> {
 	
 	public T search(K k);
 	
-	public void delete(T t);
+	public void delete(T t, K k);
 	
 	public int size();
 	

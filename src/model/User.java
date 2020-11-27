@@ -62,5 +62,8 @@ public class User implements Comparable<User>{
 		return this.dateOfJoin.compareTo(o.dateOfJoin);
 	}
 	
+	public boolean equals(User u) {
+		return iD.equals(u.iD);
+	}
 	
 }

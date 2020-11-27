@@ -1,13 +1,16 @@
 package dataStructures;
 
+import java.lang.reflect.Array;
+
 public class Heap<T extends Comparable<T>> implements IHeap {
 	
 	private T[] heap;
 	public int heap_size;
 	
-	@SuppressWarnings("unchecked")
-	public Heap(int size) {	
-		this.heap = (T[])new Object[size];
+	public Heap(int size,Class<T> c) {
+		@SuppressWarnings("unchecked")
+		final T[] heap = (T[]) Array.newInstance(c, size);
+		this.heap = heap;
 		heap_size = 0;
 	}
 	
@@ -51,8 +54,8 @@ public class Heap<T extends Comparable<T>> implements IHeap {
 		}
 	}
 	
-	public void heapSort(T[] t) {
-		Heap<T> heap = new Heap<T>(t.length);
+	public void heapSort(T[] t,Class<T> c) {
+		Heap<T> heap = new Heap<T>(t.length,c);
 		
 		buildHeap(heap);
 		for(int i = heap.size();i>0;i = i-2) {
