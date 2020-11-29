@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import Exceptions.QueueEmptyException;
 import Exceptions.UserNotExistException;
@@ -35,6 +36,21 @@ public class BAnk {
 		} catch (IOException e) {
 			System.out.println("Error charging the data");
 		}
+	}
+	
+	public ArrayList<User> getDatabase() {
+		return dataBase.getElements();
+	}
+	
+	public ArrayList<User> getDataBasesortedBy(String parameter){
+		ArrayList<User> temp = dataBase.getElements();
+		User[] users = new User[temp.size()];
+		temp.toArray(users);
+		prioQueue.heapSort(users, User.class);
+		temp.clear();
+		for(User u : users) {
+			temp.add(u);		}
+		return temp;
 	}
 	
 	public void newEntry(String ID) throws UserNotExistException {
@@ -101,7 +117,7 @@ public class BAnk {
 			}else
 				string = null;
 		}
-		
+		br.close();
 	}
 	
 }

@@ -59,7 +59,7 @@ public class User implements Comparable<User>{
 
 	@Override
 	public int compareTo(User o) {
-		return this.dateOfJoin.compareTo(o.dateOfJoin);
+		return this.name.compareTo(o.name);
 	}
 	
 	public boolean equals(User u) {

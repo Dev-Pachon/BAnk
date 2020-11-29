@@ -1,5 +1,8 @@
 package ui;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 import com.sun.java.swing.plaf.motif.MotifButtonListener;
@@ -8,6 +11,8 @@ import Exceptions.QueueEmptyException;
 import Exceptions.UserNotExistException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -16,18 +21,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
 import model.BAnk;
-import model.PayType;
-import model.TransactionType;
 import model.User;
 
 public class uiController {
-
+	
     @FXML
-    private Button confirmButton;
+    private ComboBox<String> sortComboBox;
+	
+	@FXML
+    private Button sortButton;
+
+	@FXML
+	private Button confirmButton;
 
 	@FXML
 	private TextField nameTextField;
@@ -81,7 +91,26 @@ public class uiController {
 	private Label debitCardSearchedLabel;
 
 	@FXML
-	private TableView<?> dataTableView;
+	private TableView<User> dataTableView;
+
+	@FXML
+	private TableColumn<User, String> nameTableCol;
+
+	@FXML
+	private TableColumn<User, String> idTableCol;
+
+	@FXML
+	private TableColumn<User, LocalDate> dateJoinTableCol;
+
+	@FXML
+	private TableColumn<User, LocalDate> datePayTableCol;
+
+	@FXML
+	private TableColumn<User, Double> debitTableCol;
+
+	@FXML
+	private TableColumn<User, Double> creditTableCol;
+
 
 	private BAnk bank;
 
@@ -97,6 +126,18 @@ public class uiController {
 
 		typePayComboBox.getItems().add(0, "Cash");
 		typePayComboBox.getItems().add(1, "DebitCard");
+		
+		sortComboBox.getItems().add("Name");
+		sortComboBox.getItems().add("ID");
+		sortComboBox.getItems().add("Account Number");
+		sortComboBox.getItems().add("Debit Card");
+
+		nameTableCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+		idTableCol.setCellValueFactory(new PropertyValueFactory<>("iD"));
+		creditTableCol.setCellValueFactory(new PropertyValueFactory<>("creditCard"));
+		debitTableCol.setCellValueFactory(new PropertyValueFactory<>("debitCard"));
+		dateJoinTableCol.setCellValueFactory(new PropertyValueFactory<>("dateOfPayCC"));
+		datePayTableCol.setCellValueFactory(new PropertyValueFactory<>("dateOfJoin"));
 	}
 
 	@FXML
@@ -164,6 +205,11 @@ public class uiController {
 		String operation = operationComboBox.getSelectionModel().getSelectedItem();
 		String typePay = typePayComboBox.getSelectionModel().getSelectedItem();
 
+		if(operation==null||typePay==null) {
+			JOptionPane.showMessageDialog(null, "An operation and a type of pay needs to be choosen!");
+			return;
+		}
+
 		switch(operation) {
 		case "Make a deposit":
 			break;
@@ -182,17 +228,23 @@ public class uiController {
 		case "DebitCard":
 			break;
 		}
-		
-		
 
+
+		idSearchTextField.setText("");
 		accountNumSearchedLabel.setText("---------------------------------------");
 		debitCardSearchedLabel.setText("---------------------------------------");
 		idSearchedLabel.setText("---------------------------------------");
 		nameSearchedLabel.setText("---------------------------------------");
-		
-		operationComboBox.setDisable(false);
-		typePayComboBox.setDisable(false);
+
+		operationComboBox.getSelectionModel().select("");
+		typePayComboBox.getSelectionModel().select("");
+
+		operationComboBox.setDisable(true);
+		typePayComboBox.setDisable(true);
+		amountTextField.setDisable(true);
+		amountTextField.setText("");
 		confirmButton.setDisable(true);
+
 	}
 
 	@FXML
@@ -206,13 +258,14 @@ public class uiController {
 			debitCardSearchedLabel.setText(u.getDebitCard()+"");
 			idSearchedLabel.setText(u.getID());
 			nameSearchedLabel.setText(u.getName());
-			operationComboBox.setDisable(true);
+			operationComboBox.setDisable(false);
 		}
 
 	}
-	
+
 	@FXML
 	void choiceEvent(ActionEvent event) {
+
 		if(operationComboBox.getSelectionModel().getSelectedItem().equals("Cancel an account")) {
 			typePayComboBox.setDisable(true);
 			amountTextField.setDisable(true);
@@ -221,5 +274,25 @@ public class uiController {
 			amountTextField.setDisable(false);
 		}
 		confirmButton.setDisable(false);
+	}
+
+	public void actualizeTable(Event event) {
+		ObservableList<User> data = FXCollections.observableArrayList(bank.getDatabase());
+		dataTableView.getItems().addAll(data);
+	}
+	
+	public void sortTable(ActionEvent event) {
+		
+		String order = sortComboBox.getSelectionModel().getSelectedItem();
+		
+		ArrayList<User> sorted = bank.getDataBasesortedBy(order);
+		
+		ObservableList<User> data = FXCollections.observableArrayList(sorted);
+		
+		dataTableView.getItems().addAll(data);
+	}
+	
+	public void sortComboBoxAction(ActionEvent event) {
+		sortButton.setDisable(false);
 	}
 }

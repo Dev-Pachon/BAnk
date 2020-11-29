@@ -178,7 +178,7 @@
                         <Font name="Castellar" size="32.0" />
                      </font>
                   </Label>
-                  <Button fx:id="confirmButton" alignment="CENTER" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#operation" text="Confirm" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="TOP">
+                  <Button fx:id="confirmButton" alignment="CENTER" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#operation" text="Confirm" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
                      <font>
                         <Font name="Castellar" size="20.0" />
                      </font>
@@ -267,6 +267,11 @@
                   </Label>
                   <ComboBox fx:id="operationComboBox" disable="true" onAction="#choiceEvent" prefWidth="400.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <ComboBox fx:id="typePayComboBox" disable="true" layoutX="565.0" layoutY="410.0" prefWidth="400.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Button alignment="CENTER" disable="true" mnemonicParsing="false" text="Undo" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Castellar" size="20.0" />
+                     </font>
+                  </Button>
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" />
@@ -283,17 +288,18 @@
             </GridPane>
          </content>
       </Tab>
-    <Tab closable="false" text="Data Table">
+    <Tab closable="false" onSelectionChanged="#actualizeTable" text="Data Table">
          <content>
             <GridPane>
                <columnConstraints>
                   <ColumnConstraints />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints />
+                  <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="51.0" />
+                  <RowConstraints maxHeight="717.0" minHeight="702.0" prefHeight="702.0" />
                </rowConstraints>
                <children>
-                  <TableView fx:id="dataTableView" tableMenuButtonVisible="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                  <TableView fx:id="dataTableView" tableMenuButtonVisible="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="nameTableCol" editable="false" prefWidth="75.0" text="Name" />
                       <TableColumn fx:id="idTableCol" editable="false" prefWidth="75.0" text="ID" />
@@ -306,6 +312,24 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                      </columnResizePolicy>
                   </TableView>
+                  <Button fx:id="sortButton" disable="true" mnemonicParsing="false" onAction="#sortTable" text="Sort" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets left="50.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font name="Castellar" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" text="DATA BASE" GridPane.halignment="CENTER">
+                     <font>
+                        <Font name="Castellar" size="20.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="sortComboBox" onAction="#sortComboBoxAction" prefWidth="150.0" promptText="by">
+                     <GridPane.margin>
+                        <Insets left="250.0" />
+                     </GridPane.margin>
+                  </ComboBox>
                </children>
             </GridPane>
          </content>

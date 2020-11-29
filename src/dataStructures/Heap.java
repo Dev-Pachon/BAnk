@@ -8,22 +8,32 @@ public class Heap<T extends Comparable<T>> implements IHeap {
 	public int heap_size;
 	
 	public Heap(int size,Class<T> c) {
+		
 		@SuppressWarnings("unchecked")
-		final T[] heap = (T[]) Array.newInstance(c, size);
+		final T[] heap = (T[]) Array.newInstance(c, size+1);
 		this.heap = heap;
 		heap_size = 0;
 	}
 	
-	public void insert(T t) {
-		if(heap_size==heap.length) {
-			throw new IndexOutOfBoundsException("The heap is full");
-		}else {
-			heap[heap_size++] = t;
-			maxHeapify(this, heap_size/2);
-		}
-	}
+	public void insert(T t) 
+    { 
+        heap[++heap_size] = t; 
+  
+        // Traverse up and fix violated property 
+        int current = heap_size; 
+        while (heap[current].compareTo(heap[current/2])>0) {
+        	T tmp = heap[current]; 
+            heap[current] = heap[current/2]; 
+            heap[current/2] = tmp;
+            
+            current = current/2; 
+        } 
+    }
 	
 	public void maxHeapify(Heap<T> heap,int i) {
+		if(isLeaf(i))
+			return;
+		
 		int left = i*2;
 		int right = i*2+1;
 		int largest = -1;
@@ -65,6 +75,14 @@ public class Heap<T extends Comparable<T>> implements IHeap {
 			maxHeapify(heap, 1);
 		}
 	}
+	
+	private boolean isLeaf(int pos) 
+    { 
+        if (pos >= (heap_size / 2) && pos <= heap_size) { 
+            return true; 
+        } 
+        return false; 
+    } 
 	
 	public T get(int i) {
 		return heap[i];
