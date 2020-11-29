@@ -24,21 +24,27 @@ public class Queue<T> implements IQueue<T> {
 
 	@Override
 	public T poll() {
-		NodeQueue<T> firstTemp = null;
 		if(first!=null) {
-			firstTemp = first;
-			if(last.equals(firstTemp)) {
+			NodeQueue<T> firstTemp = first; 
+			if(first.getNext()!=null) {
+				first = first.getNext();
+			}else {
+				first = null;
 				last = null;
 			}
-			first = firstTemp.getNext();
 			size--;
+			return firstTemp.getValue();
 		}
-		return firstTemp.getValue();
+		return null;
+		
 	}
-
+	
 	@Override
 	public T peek() {
-		return first.getValue();
+		if(first!=null)
+			return first.getValue();
+		else
+			return null;
 	}
 
 	@Override

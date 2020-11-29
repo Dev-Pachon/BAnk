@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import Exceptions.QueueEmptyException;
+import Exceptions.UserNotExistException;
 import dataStructures.Hash;
 import dataStructures.PriorityQueue;
 import dataStructures.Queue;
@@ -35,8 +37,47 @@ public class BAnk {
 		}
 	}
 	
-	public void newEntry() {
-		
+	public void newEntry(String ID) throws UserNotExistException {
+		User u = dataBase.search(ID);
+		if(u!=null){
+			queue.offer(u);
+		}else
+			throw new UserNotExistException();
+	}
+	
+	public void attendQueueUser() throws QueueEmptyException {
+		User u = queue.poll(); 
+		if(u==null) {
+			throw new QueueEmptyException();
+		}
+	}
+	
+	public void attendPrioQueueUser() throws QueueEmptyException {
+		User u = prioQueue.poll(); 
+		if(u==null) {
+			throw new QueueEmptyException();
+		}
+	}
+	
+	public User searchUser(String id) {
+		User u = dataBase.search(id);
+		return u;
+	}
+	
+	public User peekQueue() {
+		return queue.peek();
+	}
+	
+	public int getQueueSize() {
+		return queue.size();
+	}
+	
+	public int getPrioQueueSize() {
+		return prioQueue.size();
+	}
+	
+	public User peekPrioQueue() {
+		return prioQueue.peek();
 	}
 	
 	private void chargeDatabase() throws IOException {
