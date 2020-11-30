@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import com.sun.java.swing.plaf.motif.MotifButtonListener;
 
+import Exceptions.NotEnoughMoneyException;
 import Exceptions.QueueEmptyException;
 import Exceptions.UserNotExistException;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.BAnk;
 import model.User;
+import model.PayType;
 
 public class uiController {
 	
@@ -110,6 +112,9 @@ public class uiController {
 
 	@FXML
 	private TableColumn<User, Double> creditTableCol;
+	
+	@FXML
+	private TableColumn<User, String> AccountNumberTableCol;
 
 
 	private BAnk bank;
@@ -120,7 +125,7 @@ public class uiController {
 
 	public void initialize() {
 		operationComboBox.getItems().add(0, "Make a deposit");
-		operationComboBox.getItems().add(1, "Make a withdraw");
+		operationComboBox.getItems().add(1, "Make a withdrawal");
 		operationComboBox.getItems().add(2, "Cancel an account");
 		operationComboBox.getItems().add(3, "Pay card");
 
@@ -138,6 +143,7 @@ public class uiController {
 		debitTableCol.setCellValueFactory(new PropertyValueFactory<>("debitCard"));
 		dateJoinTableCol.setCellValueFactory(new PropertyValueFactory<>("dateOfPayCC"));
 		datePayTableCol.setCellValueFactory(new PropertyValueFactory<>("dateOfJoin"));
+		AccountNumberTableCol.setCellValueFactory(new PropertyValueFactory<>("bankAccountNum"));
 	}
 
 	@FXML
@@ -191,7 +197,21 @@ public class uiController {
 		IDTextField.setText("");
 		nameTextField.setText("");
 		try {
-			bank.newEntry(id);
+			bank.newEntry(id,false);
+			JOptionPane.showMessageDialog(null, "Added correctly to the queue");
+		} catch (UserNotExistException e) {
+			JOptionPane.showMessageDialog(null, "The user isn´t on the data base");
+		}
+
+	}
+	
+	@FXML
+	public void newEntryWithPriority(ActionEvent event) {
+		String id = IDTextField.getText();
+		IDTextField.setText("");
+		nameTextField.setText("");
+		try {
+			bank.newEntry(id,true);
 			JOptionPane.showMessageDialog(null, "Added correctly to the queue");
 		} catch (UserNotExistException e) {
 			JOptionPane.showMessageDialog(null, "The user isn´t on the data base");
@@ -205,31 +225,51 @@ public class uiController {
 		String operation = operationComboBox.getSelectionModel().getSelectedItem();
 		String typePay = typePayComboBox.getSelectionModel().getSelectedItem();
 
-		if(operation==null||typePay==null) {
-			JOptionPane.showMessageDialog(null, "An operation and a type of pay needs to be choosen!");
+		if(operation==null) {
+			JOptionPane.showMessageDialog(null, "An operation needs to be choosen!");
 			return;
 		}
 
 		switch(operation) {
 		case "Make a deposit":
+			try {
+				bank.makeDeposit(idSearchedLabel.getText(), Double.parseDouble(amountTextField.getText()));
+			}catch(NumberFormatException exception) {
+				JOptionPane.showMessageDialog(null, "The amount needs to be a correct number!");
+			}
 			break;
-		case "Make a withdraw":
+		case "Make a withdrawal":
+			try {
+				bank.makeWithdrawal(idSearchedLabel.getText(), Double.parseDouble(amountTextField.getText()));
+			} catch (NumberFormatException exception) {
+				JOptionPane.showMessageDialog(null, "The amount needs to be a correct number!");
+			} catch (NotEnoughMoneyException exception) {
+				JOptionPane.showMessageDialog(null, "The amount is not enough to make the withdrawal!");
+			}
 			break;
 		case "Cancel an account":
+			bank.cancelAccount(idSearchedLabel.getText());
 			break;
 		case "Pay card":
+			if(typePay==null) {
+				JOptionPane.showMessageDialog(null, "A type of pay needs to be choosen!");
+				return;
+			}
+			try {
+				if(typePay.equals("Cash"))
+					bank.payCreditCard(idSearchedLabel.getText(), Double.parseDouble(amountTextField.getText()),PayType.CASH);
+				else
+					bank.payCreditCard(idSearchedLabel.getText(), Double.parseDouble(amountTextField.getText()),PayType.PAY_WITH_CARD);
+				
+			} catch (NumberFormatException exception) {
+				JOptionPane.showMessageDialog(null, "The amount needs to be a correct number!");
+			} catch (NotEnoughMoneyException exception) {
+				JOptionPane.showMessageDialog(null, "The debit card amount is not enough to make the pay!");
+			}
 			break;
 
 		}
-
-		switch(typePay) {
-		case "Cash":
-			break;
-		case "DebitCard":
-			break;
-		}
-
-
+		
 		idSearchTextField.setText("");
 		accountNumSearchedLabel.setText("---------------------------------------");
 		debitCardSearchedLabel.setText("---------------------------------------");
@@ -269,8 +309,11 @@ public class uiController {
 		if(operationComboBox.getSelectionModel().getSelectedItem().equals("Cancel an account")) {
 			typePayComboBox.setDisable(true);
 			amountTextField.setDisable(true);
-		}else {
+		}else if(operationComboBox.getSelectionModel().getSelectedItem().equals("Pay card")){
 			typePayComboBox.setDisable(false);
+			amountTextField.setDisable(false);
+		}else {
+			typePayComboBox.setDisable(true);
 			amountTextField.setDisable(false);
 		}
 		confirmButton.setDisable(false);
@@ -278,18 +321,36 @@ public class uiController {
 
 	public void actualizeTable(Event event) {
 		ObservableList<User> data = FXCollections.observableArrayList(bank.getDatabase());
-		dataTableView.getItems().addAll(data);
+		dataTableView.getItems().setAll(data);
 	}
 	
 	public void sortTable(ActionEvent event) {
 		
 		String order = sortComboBox.getSelectionModel().getSelectedItem();
+		ArrayList<User> sorted = null;
 		
-		ArrayList<User> sorted = bank.getDataBasesortedBy(order);
+		switch (order) {
+		case "Name":
+			sorted = bank.sortByName();
+			break;
+			
+		case "ID":
+			sorted = bank.sortById();
+			break;
+			
+		case "Account Number":
+			sorted = bank.sortByAccountNumber();;
+			break;
+			
+		case "Debit Card":
+			sorted = bank.sortByDebitCard();
+			break;
+
+		}
 		
 		ObservableList<User> data = FXCollections.observableArrayList(sorted);
 		
-		dataTableView.getItems().addAll(data);
+		dataTableView.getItems().setAll(data);
 	}
 	
 	public void sortComboBoxAction(ActionEvent event) {

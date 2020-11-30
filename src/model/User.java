@@ -62,6 +62,18 @@ public class User implements Comparable<User>{
 		return this.name.compareTo(o.name);
 	}
 	
+	public int compareById(User o) {
+		return this.iD.compareTo(o.iD);
+	}
+	
+	public int compareByAccountNumber(User o) {
+		return this.bankAccountNum.compareTo(o.bankAccountNum);
+	}
+	
+	public double compareByDebitCard(User o) {
+		return this.debitCard-o.debitCard;
+	}
+	
 	public boolean equals(User u) {
 		return iD.equals(u.iD);
 	}

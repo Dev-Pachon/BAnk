@@ -10,14 +10,14 @@ public class Heap<T extends Comparable<T>> implements IHeap {
 	public Heap(int size,Class<T> c) {
 		
 		@SuppressWarnings("unchecked")
-		final T[] heap = (T[]) Array.newInstance(c, size+1);
+		final T[] heap = (T[]) Array.newInstance(c, size);
 		this.heap = heap;
 		heap_size = 0;
 	}
 	
 	public void insert(T t) 
     { 
-        heap[++heap_size] = t; 
+        heap[heap_size] = t; 
   
         // Traverse up and fix violated property 
         int current = heap_size; 
@@ -27,54 +27,42 @@ public class Heap<T extends Comparable<T>> implements IHeap {
             heap[current/2] = tmp;
             
             current = current/2; 
-        } 
+        }
+        
+        heap_size++;
     }
 	
-	public void maxHeapify(Heap<T> heap,int i) {
+	public void maxHeapify(int i) {
 		if(isLeaf(i))
 			return;
 		
 		int left = i*2;
 		int right = i*2+1;
-		int largest = -1;
 		
-		
-		if(left<=heap.heap_size&&heap.get(left).compareTo(heap.get(right))>0) {
-			largest = left;
-		}else
-			largest = right;
-		
-		if(right<=heap.heap_size&&heap.get(right).compareTo(heap.get(largest))>0) {
-			largest = right;
-		}
-		
-		if(largest!=i) {
-			T temp = heap.get(i);
-			heap.set(heap.get(largest), i);
-			heap.set(temp, i);
-			maxHeapify(heap, largest);
-		}
+		if (heap[i].compareTo(heap[left]) < 0 || heap[i].compareTo(heap[right])<0) { 
+	  
+	            if (heap[left].compareTo(heap[right])>0) { 
+	            	T tmp = heap[i]; 
+	                heap[i] = heap[left]; 
+	                heap[left] = tmp;
+	                maxHeapify(left); 
+	            } 
+	            else {
+	            	T tmp = heap[i]; 
+	                heap[i] = heap[right]; 
+	                heap[right] = tmp; 
+	                maxHeapify(right); 
+	            } 
+	        } 
 		
 	}
 	
-	public void buildHeap(Heap<T> heap) {
-		heap.heap_size = heap.size();
-		for(int i = Math.floorDiv(heap.heap_size, 2);i>0;i--) {
-			maxHeapify(heap, i);
-		}
-	}
-	
-	public void heapSort(T[] t,Class<T> c) {
-		Heap<T> heap = new Heap<T>(t.length,c);
-		
-		buildHeap(heap);
-		for(int i = heap.size();i>0;i = i-2) {
-			T temp = heap.get(1);
-			heap.set(heap.get(i), 1);
-			heap.set(temp, 1);
-			maxHeapify(heap, 1);
-		}
-	}
+	public T extractMax(){ 
+        T pop = heap[1]; 
+        heap[1] = heap[heap_size--]; 
+        maxHeapify(1); 
+        return pop; 
+    }
 	
 	private boolean isLeaf(int pos) 
     { 

@@ -13,15 +13,8 @@ public class PriorityQueue<T extends Comparable<T>> extends Heap<T> implements I
 
 	@Override
 	public T poll() {
-		T max = null;
-		if(!(heap_size<1)) {
-			max = get(0);
-			set(get(heap_size-1), 0);
-			set(max, heap_size-1);
-			heap_size--;
-			maxHeapify(this, 0);
-		}
-		return max;
+		return extractMax();
+		
 	}
 
 	@Override
